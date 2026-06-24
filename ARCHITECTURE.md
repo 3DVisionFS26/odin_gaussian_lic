@@ -132,7 +132,7 @@ It reads the incoming topics from the odin1 sensor or the bagfiles and processes
 
 Align the incoming data temporally and create a frame/camera. Then initialize or extend the gaussian map. Then optimize and once no more data is incoming evaluate the results.
 
-Our good friend Claude hijacked this class to do the ROS2/odin specific operations.
+This class was extended to handle the ROS2/Odin-specific operations.
 
 We should probably move to separate files for better readability. One for ROS2 integration `GaussianLICNode`, one for frame processing and the original `mapping.cpp`
 
