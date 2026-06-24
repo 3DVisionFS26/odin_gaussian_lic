@@ -1,0 +1,112 @@
+# ==============================================================================
+# Gaussian-LIC configuration for the Odin1 sensor (ROS2 / Humble)
+#
+# The node subscribes directly to the Odin1 ROS2 topics – no Coco-LIC needed.
+#
+# For bag replay:
+#   ros2 bag play <bag_dir> --clock
+#
+# For live sensor use:
+#   Start odin_ros_driver – it publishes the same topics.
+# ==============================================================================
+
+# ---- Odin1 ROS2 topic names ------------------------------------------------
+cloud_topic: "/odin1/cloud_slam"      # world-frame SLAM point cloud
+odom_topic:  "/odin1/odometry"        # sensor pose in world (nav_msgs/Odometry)
+image_topic: "/odin1/image/compressed" # fisheye JPEG (sensor_msgs/CompressedImage)
+
+# ---- Odin1 original camera calibration (FishPoly model) -------------------
+odin1_width:  1600
+odin1_height: 1296
+odin1_fx:   733.44086   # A11
+odin1_fy:   733.15976   # A22
+odin1_cx:   813.52019   # u0
+odin1_cy:   619.15050   # v0
+odin1_skew: -0.32560    # A12 (row-skew coefficient)
+
+# FishPoly polynomial distortion: r_d = r + k2*r^2 + k3*r^3 + ... + k7*r^7
+k2: -3.9319994970170883e-03
+k3:  8.9136640436950614e-03
+k4: -6.3158866838848498e-02
+k5:  7.4599103109359701e-02
+k6: -4.4581040226192393e-02
+k7:  9.0923245448385967e-03
+
+# LiDAR-to-camera extrinsic: T_cl (camera-from-LiDAR, 4×4 row-major)
+# Source: /home/darius/datasets/cam_in_ex.txt  Tcl_0
+T_cl: [
+   0.00238, -1.00000,  0.00083,  0.02376,
+  -0.00001, -0.00083, -1.00000,  0.00489,
+   1.00000,  0.00238, -0.00001, -0.00076,
+   0.00000,  0.00000,  0.00000,  1.00000
+]
+
+# ---- Output image size for Gaussian splatting ------------------------------
+# The node auto-crops + resizes the undistorted image to this resolution and
+# computes the corresponding pinhole intrinsics (fx, fy, cx, cy) automatically.
+# Use 640×512 to match the bundled SPNet depth-completion engine.
+width:  320
+height: 256
+
+# Optional: override the auto-computed output intrinsics (leave commented out
+# to use the values derived from the crop/resize pipeline above).
+# fx: 293.38
+# fy: 293.26
+# cx: 325.41
+# cy: 244.46
+
+# ---- Dataset / frame selection ---------------------------------------------
+select_every_k_frame: 8    # use every 8th aligned frame as a keyframe
+depth_completion: false     # disabled for speed (SPNet was 81% of CPU time on RTX 4050)
+
+# ---- Real-time tuning -------------------------------------------------------
+# max_iters: optimization iterations per keyframe (default 100).
+# Reduce for real-time operation at the cost of per-frame quality.
+#   100 → high quality, ~1.1s/keyframe (offline)
+#    30 → balanced,     ~0.35s/keyframe (~real-time at 3 Hz keyframe rate)
+#    15 → fast,         ~0.18s/keyframe (real-time with margin)
+max_iters: 3
+patch_size: 10
+max_depth: 20.0             # metres; reduced to limit init point cloud size
+
+# Gaussian pruning: remove near-invisible Gaussians every N keyframes.
+# This bounds the Gaussian count and keeps rasterisation cost constant over time.
+# prune_opacity_thresh: opacity below this (after sigmoid) → pruned.
+#   0.005 = standard 3DGS threshold; 0.01 = more aggressive
+# prune_every_n_keyframes: 0 = disabled, 5 = prune every ~1.7s at 3 Hz
+prune_opacity_thresh:    0.05
+prune_every_n_keyframes: 2
+
+# max_gaussians: hard cap on total Gaussian count. When reached, extend() is
+# skipped until pruning brings the count below the cap. 0 = unlimited.
+# 150000 is safe on Jetson Orin NX (16 GB unified) at full clocks.
+max_gaussians: 250000
+
+# ---- Gaussian model --------------------------------------------------------
+sh_degree: 3
+white_background:     false
+random_background:    false
+convert_SHs_python:   false
+compute_cov3D_python: false
+lambda_erank:         0
+scaling_scale:        2
+
+position_lr:  0.00016
+feature_lr:   0.0050
+opacity_lr:   0.05
+scaling_lr:   0.015
+rotation_lr:  0.001
+lambda_dssim: 0.2
+optimize_depth: true
+lambda_depth:   0.005
+iteration_decay: true
+
+# How often to publish the rendered image and Gaussian point cloud to RViz2.
+# Every N keyframes: 1 = every keyframe, 5 = every 5th, 0 = disable.
+# Higher values reduce GPU overhead on the mapping thread.
+viz_every_n_keyframes: 8
+
+apply_exposure: false
+exposure_lr:    0.001
+skybox_points_num: 0
+skybox_radius:     1000

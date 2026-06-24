@@ -1,0 +1,91 @@
+# ==============================================================================
+# Gaussian-LIC configuration for CARLA simulator data
+#
+# Bridge script: CARLA/carla_gaussianlic_bridge.py
+#   - 800×600 RGB camera, 90° H-FOV, perfect pinhole (zero distortion)
+#   - 32-ch LiDAR at the same mount point as the camera (z=2.4m on vehicle roof)
+#   - Both sensors co-located → T_cl is a pure rotation, zero translation
+#   - Synchronous mode at 10 Hz
+# ==============================================================================
+
+# ---- ROS2 topic names (same as the bridge publishes) -----------------------
+cloud_topic: "/odin1/cloud_slam"
+odom_topic:  "/odin1/odometry"
+image_topic: "/odin1/image/compressed"
+
+# ---- CARLA camera intrinsics (800×600, 90° horizontal FOV) -----------------
+# Pinhole: fx = fy = (width/2) / tan(fov/2) = 400 / tan(45°) = 400.0
+# CARLA cameras have zero distortion — the FishPoly remap must be a no-op.
+# Setting k3=1/3, k5=2/15, k7=17/315 (Taylor series of tan θ) makes the
+# remap identity for a pinhole camera without any code changes.
+odin1_width:  800
+odin1_height: 600
+odin1_fx:   400.0
+odin1_fy:   400.0
+odin1_cx:   400.0
+odin1_cy:   300.0
+odin1_skew: 0.0
+
+k2: 0.0
+k3: 0.333333333   # 1/3   — together these make theta_d = tan(theta),
+k4: 0.0           #         turning the FishPoly remap into an identity
+k5: 0.133333333   # 2/15    passthrough for a pinhole camera
+k6: 0.0
+k7: 0.053968254   # 17/315
+
+# ---- LiDAR-to-camera extrinsic: T_cl (camera-from-LiDAR, 4×4 row-major) ---
+# In the CARLA bridge both sensors are co-located (same Transform).
+# The LiDAR odometry is published in ROS frame: X-forward, Y-left, Z-up.
+# The camera frame is: X-right, Y-down, Z-forward.
+# Mapping: cam_X = -lidar_Y, cam_Y = -lidar_Z, cam_Z = +lidar_X
+T_cl: [
+   0, -1,  0,  0,
+   0,  0, -1,  0,
+   1,  0,  0,  0,
+   0,  0,  0,  1
+]
+
+# ---- Output image resolution for Gaussian splatting -----------------------
+# 640×480 preserves the 4:3 aspect of the 800×600 CARLA camera.
+# With depth_completion: false there is no TRT-engine size constraint.
+width:  640
+height: 480
+
+# ---- Dataset / frame selection --------------------------------------------
+select_every_k_frame: 3
+depth_completion: false    # CARLA has no real depth sensor; SPNet not needed
+
+# ---- Real-time tuning -----------------------------------------------------
+max_iters: 10
+patch_size: 10
+max_depth: 50.0
+
+# Gaussian pruning
+prune_opacity_thresh:    0.01
+prune_every_n_keyframes: 5
+
+# ---- Gaussian model -------------------------------------------------------
+sh_degree: 3
+white_background:     false
+random_background:    false
+convert_SHs_python:   false
+compute_cov3D_python: false
+lambda_erank:         0
+scaling_scale:        2
+
+position_lr:  0.00016
+feature_lr:   0.0050
+opacity_lr:   0.05
+scaling_lr:   0.015
+rotation_lr:  0.001
+lambda_dssim: 0.2
+optimize_depth: false
+lambda_depth:   0.005
+iteration_decay: true
+
+viz_every_n_keyframes: 5
+
+apply_exposure: false
+exposure_lr:    0.001
+skybox_points_num: 0
+skybox_radius:     1000

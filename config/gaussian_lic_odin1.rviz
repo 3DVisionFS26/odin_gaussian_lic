@@ -1,0 +1,187 @@
+Panels:
+  - Class: rviz_common/Displays
+    Help Height: 78
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /SLAM Cloud1
+        - /Gaussian Splats1
+      Splitter Ratio: 0.5
+    Tree Height: 600
+  - Class: rviz_common/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+
+Visualization Manager:
+  Class: ""
+  Displays:
+
+    - Class: rviz_default_plugins/PointCloud2
+      Enabled: true
+      Name: SLAM Cloud
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /gaussian_lic/cloud
+      Color Transformer: RGB8
+      Position Transformer: XYZ
+      Style: Points
+      Size (Pixels): 2
+      Size (m): 0.02
+      Decay Time: 0
+      Selectable: true
+      Use Fixed Frame: true
+      Invert Rainbow: false
+      Use rainbow: false
+      Max Color: 255; 255; 255
+      Min Color: 0; 0; 0
+      Axis: Z
+      Channel Name: intensity
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Value: true
+
+    - Class: rviz_default_plugins/PointCloud2
+      Enabled: true
+      Name: Gaussian Splats
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /gaussian_lic/gaussians
+      Color Transformer: RGB8
+      Position Transformer: XYZ
+      Style: Points
+      Size (Pixels): 2
+      Size (m): 0.02
+      Decay Time: 0
+      Selectable: true
+      Use Fixed Frame: true
+      Invert Rainbow: false
+      Use rainbow: false
+      Max Color: 255; 255; 255
+      Min Color: 0; 0; 0
+      Axis: Z
+      Channel Name: intensity
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Value: true
+
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Name: Input Image
+      Topic:
+        Depth: 1
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /gaussian_lic/input
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Normalize Range: true
+      Queue Size: 2
+      Value: true
+
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Name: Rendered Image
+      Topic:
+        Depth: 1
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /gaussian_lic/render
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Normalize Range: true
+      Queue Size: 2
+      Value: true
+
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Name: Rendered Depth
+      Topic:
+        Depth: 1
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /gaussian_lic/depth
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Normalize Range: false
+      Queue Size: 2
+      Value: true
+
+  Enabled: true
+  Global Options:
+    Background Color: 20; 20; 20
+    Fixed Frame: world
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+    - Class: rviz_default_plugins/FocusCamera
+    - Class: rviz_default_plugins/Measure
+      Line color: 128; 128; 0
+    - Class: rviz_default_plugins/PublishPoint
+      Single click: true
+      Topic: /clicked_point
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 30
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.06
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.01
+      Pitch: 0.5
+      Target Frame: <Fixed Frame>
+      Value: Orbit (rviz_default_plugins)
+      Yaw: 0.785
+    Saved: ~
+
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 900
+  Hide Left Dock: false
+  Hide Right Dock: false
+  Input Image:
+    collapsed: false
+  Rendered Image:
+    collapsed: false
+  Rendered Depth:
+    collapsed: false
+  Views:
+    collapsed: false
+  Width: 1600
+  X: 0
+  Y: 0
