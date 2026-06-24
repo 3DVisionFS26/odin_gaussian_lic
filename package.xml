@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>gaussian_lic</name>
+  <version>0.1.0</version>
+  <description>Gaussian-LIC ROS2: Real-Time Photo-Realistic SLAM with Gaussian Splatting and Odin1 LiDAR-Inertial-Camera Fusion</description>
+
+  <maintainer email="user@todo.todo">user</maintainer>
+  <license>GPL-3.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>cv_bridge</depend>
+  <depend>image_transport</depend>
+  <depend>pcl_conversions</depend>
+  <depend>tf2</depend>
+  <depend>tf2_eigen</depend>
+  <depend>tf2_ros</depend>
+  <depend>ament_index_cpp</depend>
+
+  <!-- Web monitor Python node -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>python3-cv-bridge</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
